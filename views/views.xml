@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="wt.barq.invoice.list">
+      <field name="name">wt.barq.invoice list</field>
+      <field name="model">wt.barq.invoice.wt.barq.invoice</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="wt.barq.invoice.action_window">
+      <field name="name">wt.barq.invoice window</field>
+      <field name="res_model">wt.barq.invoice.wt.barq.invoice</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="wt.barq.invoice.action_server">
+      <field name="name">wt.barq.invoice server</field>
+      <field name="model_id" ref="model_wt.barq.invoice_wt.barq.invoice"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="wt.barq.invoice" id="wt.barq.invoice.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="wt.barq.invoice.menu_1" parent="wt.barq.invoice.menu_root"/>
+    <menuitem name="Menu 2" id="wt.barq.invoice.menu_2" parent="wt.barq.invoice.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="wt.barq.invoice.menu_1_list" parent="wt.barq.invoice.menu_1"
+              action="wt.barq.invoice.action_window"/>
+    <menuitem name="Server to list" id="wt.barq.invoice" parent="wt.barq.invoice.menu_2"
+              action="wt.barq.invoice.action_server"/>
+-->
+  </data>
+</odoo>
