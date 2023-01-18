@@ -16,6 +16,7 @@ class BarqInvoice(http.Controller):
         if not data:
             return self.invalid_response('Data Error', "No data Received!", 400 )
      
+        http.Response.status = '200'
         return {'message': "done", 'result': [{invoice['id']: 'success'} for invoice in data ]}
 
 
