@@ -143,3 +143,16 @@ def create_move(uid, client, product, invoice_data):
             })]
     })
     move.with_user(uid).write({'state': 'posted'})
+
+
+
+class Test(http.Controller):
+    @http.route('/test', type='json', auth="none", csrf=False)
+    def add_barq_invoice(self, **kw):
+        model = kw.get('model')
+        fields = kw.get('fields')
+        result = http.request.env[model].sudo().search_read([], fields)
+        print('  result  '.center(100, '*'))
+        print('-' * 100)
+        http.Response.status = '200'
+        return result
