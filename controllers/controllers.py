@@ -128,6 +128,7 @@ def get_or_create_product(uid, product_name, price):
 def create_move(uid, client, product, invoice_data):
     move = http.request.env['account.move'].with_user(uid).create({
         'partner_id': client.ids[0],
+        'company_id': 1,
         'invoice_date': datetime.datetime.strptime(invoice_data['created_at'], "%Y-%m-%d %H:%M:%S").date(),
         'state': 'draft',
         'ref': 'Barq Invoice',
