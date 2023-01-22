@@ -63,7 +63,7 @@ class BarqInvoice(http.Controller):
             move = create_move(uid, client, product, invoice)
             print(move, type(move))
             print('-' * 100)
-            result[invoice['id']] = f"success"
+            result[invoice['id']] = f"successfully created invoice {move.id}"
         http.Response.status = '200'
         return {'message': "done", 'result': result}
 
@@ -130,7 +130,6 @@ def create_move(uid, client, product, invoice_data):
         'partner_id': client.ids[0],
         'invoice_date': datetime.datetime.strptime(invoice_data['created_at'], "%Y-%m-%d %H:%M:%S").date(),
         'state': 'draft',
-        'payment_state': 'paid',
         'ref': 'Barq Invoice',
         'invoice_origin': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client', 'invoiceable')}),
         'invoice_line_ids':
@@ -142,7 +141,8 @@ def create_move(uid, client, product, invoice_data):
                 'ref': json.dumps({"barq_invoiceable": invoice_data['invoiceable']})
             })]
     })
-    move.with_user(uid).write({'state': 'posted'})
+    move.with_user(uid).write({'state': 'posted', 'payment_state': 'paid'})
+    return move
 
 
 
