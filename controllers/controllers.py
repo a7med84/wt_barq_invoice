@@ -56,7 +56,7 @@ class BarqInvoice(http.Controller):
             if not product_name:
                 result[invoice['id']] = f"Unknow invoiceable type {invoice['invoiceable_type']}"
                 continue
-            product = get_or_create_product(uid, product_name)
+            product = get_or_create_product(uid, product_name, invoice['sub_total'])
             print(product, type(product))
             client = get_or_create_client(uid, invoice['client'])
             print(client, type(client))
@@ -109,7 +109,7 @@ def get_or_create_client(uid, invoice_client):
     return client
 
 
-def get_or_create_product(uid, product_name):
+def get_or_create_product(uid, product_name, price):
     product_model = http.request.env['product.product']
     product = product_model.sudo().search([('name', '=', product_name)])
     if not product:
@@ -119,6 +119,7 @@ def get_or_create_product(uid, product_name):
             'purchase_ok': False,
             'can_be_expensed': False,
             'type': 'service',
+            'list_price': price
         })
     return product
 
@@ -127,13 +128,18 @@ def get_or_create_product(uid, product_name):
 def create_move(uid, client, product, invoice_data):
     return http.request.env['account.move'].with_user(uid).create({
         'partner_id': client.ids[0],
+        'invoice_date': datetime.datetime.strptime(invoice_data['created_at'], "%Y-%m-%d %H:%M:%S").date(),
+        'state': 'posted',
+        'payment_state': 'paid',
+        'ref': 'Barq Invoice',
+        'invoice_origin': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client', 'invoiceable')}),
         'invoice_line_ids':
             [(0, 0, {
                 'product_id': product.ids[0],
-                'account_id': 43,
                 'quantity': 1,
                 'price_unit': invoice_data['sub_total'],
                 'discount': invoice_data['discount'],
                 'ref': json.dumps({"barq_invoiceable": invoice_data['invoiceable']})
             })]
     })
+
