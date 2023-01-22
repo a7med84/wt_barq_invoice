@@ -126,10 +126,10 @@ def get_or_create_product(uid, product_name, price):
 
 
 def create_move(uid, client, product, invoice_data):
-    return http.request.env['account.move'].with_user(uid).create({
+    move = http.request.env['account.move'].with_user(uid).create({
         'partner_id': client.ids[0],
         'invoice_date': datetime.datetime.strptime(invoice_data['created_at'], "%Y-%m-%d %H:%M:%S").date(),
-        'state': 'posted',
+        'state': 'draft',
         'payment_state': 'paid',
         'ref': 'Barq Invoice',
         'invoice_origin': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client', 'invoiceable')}),
@@ -142,4 +142,4 @@ def create_move(uid, client, product, invoice_data):
                 'ref': json.dumps({"barq_invoiceable": invoice_data['invoiceable']})
             })]
     })
-
+    move.with_user(uid).write({'state': 'posted'})
