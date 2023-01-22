@@ -63,7 +63,7 @@ class BarqInvoice(http.Controller):
             move = create_move(uid, client, product, invoice)
             print(move, type(move))
             print('-' * 100)
-            result[invoice['id']] = f"successfully created invoice {move.id}"
+            result[invoice['id']] = f"successfully created invoice {move.id} named {move.name}"
         http.Response.status = '200'
         return {'message': "done", 'result': result}
 
