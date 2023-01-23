@@ -109,8 +109,9 @@ def get_or_create_client(uid, invoice_client):
                 'email': invoice_client['email'],
                 'name': invoice_client['name'],
                 'phone': invoice_client['phone'],
+                'property_account_receivable_id': 373,
+                '	property_account_payable_id': 387,
                 'ref': _("Barq Client"),
-                'comment': json.dumps({'barq_info': invoice_client}),
                 'comment': json.dumps({k: invoice_client.get(k, None) for k in invoice_client.keys() if k not in ('key', 'secret')}),
             })
     return client
@@ -184,7 +185,6 @@ class createinvoice(http.Controller):
         product_id = kw.get('product_id')
         ref = kw.get('ref')
         update = kw.get('update')
-
 
         move = http.request.env['account.move'].with_user(uid).with_context(check_move_validity= False).create({
         'partner_id': partner_id,
