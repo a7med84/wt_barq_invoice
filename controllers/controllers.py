@@ -140,6 +140,7 @@ def create_move(uid, client, product, invoice_data, invoice_date):
         'company_id': 1,
         'journal_id': 16,
         'invoice_date': invoice_date,
+        'invoice_date_due': invoice_date,
         'state': 'draft',
         'invoice_payment_term_id': 1,
         'ref': 'Barq Invoice',
