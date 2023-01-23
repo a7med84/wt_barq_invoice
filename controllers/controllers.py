@@ -175,7 +175,7 @@ class createinvoice(http.Controller):
         product_id = kw.get('product_id')
         ref = kw.get('ref')
         update = kw.get('update')
-        move_line = http.request.env['	account.move.line'].with_user(uid).create({
+        move_line = http.request.env['account.move.line'].with_user(uid).create({
                 'product_id': product_id,
                 'quantity': 1,
                 'price_unit': 10,
