@@ -174,8 +174,7 @@ class createinvoice(http.Controller):
         client_id = kw.get('client_id')
         product_id = kw.get('product_id')
         ref = kw.get('ref')
-        state = kw.get('state')
-        payment_state = kw.get('state')
+        update = kw.get('update')
         move = http.request.env['account.move'].with_user(uid).create({
         'partner_id': client_id,
         'company_id': 1,
@@ -192,7 +191,8 @@ class createinvoice(http.Controller):
                 #'ref': json.dumps({"barq_invoiceable": invoice_data['invoiceable']})
             })]
         })
-        move.with_user(uid).write({'state': payment_state, 'payment_state': payment_state})
+        if update:
+            move.with_user(uid).write({'state': 'posted', 'payment_state': 'paid'})
         http.Response.status = '200'
         return {
                 "state": "success",
