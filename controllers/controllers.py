@@ -166,18 +166,20 @@ class Test(http.Controller):
         http.Response.status = '200'
         return result
 
+
 class createinvoice(http.Controller):
     @http.route('/onvoice/create', type='json', auth="none", csrf=False)
     def add_barq_invoice(self, **kw):
         uid = kw.get('uid')
         client_id = kw.get('client_id')
         product_id = kw.get('product_id')
+        ref = kw.get('ref')
         move = http.request.env['account.move'].with_user(uid).create({
         'partner_id': client_id,
         'company_id': 1,
         #'invoice_date': datetime.datetime.strptime(invoice_data['created_at'], "%Y-%m-%d %H:%M:%S").date(),
         'state': 'draft',
-        'ref': 'Barq Invoice',
+        'ref': ref,
         #'invoice_origin': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client', 'invoiceable')}),
         'invoice_line_ids':
             [(0, 0, {
