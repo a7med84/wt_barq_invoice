@@ -184,7 +184,7 @@ class createinvoice(http.Controller):
         'ref': ref,
         #'invoice_origin': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client', 'invoiceable')}),
         'invoice_line_ids':
-            [self.env['	account.move.line'].with_user(uid).create({
+            [http.request.env['	account.move.line'].with_user(uid).create({
                 'product_id': product_id,
                 'quantity': 1,
                 'price_unit': 10,
