@@ -63,7 +63,10 @@ class BarqInvoice(http.Controller):
             move = create_move(uid, client, product, invoice)
             print(move, type(move))
             print('-' * 100)
-            result[invoice['id']] = f"successfully created invoice {move.id} named {move.name}"
+            result[invoice['id']] = {
+                "state": "success",
+                "invoice": model_data(move)
+            }
         http.Response.status = '200'
         return {'message': "done", 'result': result}
 
@@ -145,6 +148,12 @@ def create_move(uid, client, product, invoice_data):
     move.with_user(uid).write({'state': 'posted', 'payment_state': 'paid'})
     return move
 
+
+def model_data(obj):
+    fields_dict = {}
+    for key in obj.fields_get():
+        fields_dict[key] = obj[key]
+    return fields_dict
 
 
 class Test(http.Controller):
