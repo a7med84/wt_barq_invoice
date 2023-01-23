@@ -162,10 +162,35 @@ class Test(http.Controller):
         model = kw.get('model')
         fields = kw.get('fields')
         filters = kw.get('filters')
-        if fields:
-            result = http.request.env[model].sudo().search_read(filters, fields)
-        else:
-            objects = http.request.env[model].sudo().search(filters)
-            result = [model_data(obj) for obj in objects]
+        result = http.request.env[model].sudo().search_read(filters, fields)
         http.Response.status = '200'
         return result
+
+class createinvoice(http.Controller):
+    @http.route('/onvoice/create', type='json', auth="none", csrf=False)
+    def add_barq_invoice(self, **kw):
+        uid = kw.get('uid')
+        client_id = kw.get('client_id')
+        product_id = kw.get('product_id')
+        move = http.request.env['account.move'].with_user(uid).create({
+        'partner_id': client_id,
+        'company_id': 1,
+        #'invoice_date': datetime.datetime.strptime(invoice_data['created_at'], "%Y-%m-%d %H:%M:%S").date(),
+        'state': 'draft',
+        'ref': 'Barq Invoice',
+        #'invoice_origin': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client', 'invoiceable')}),
+        'invoice_line_ids':
+            [(0, 0, {
+                'product_id': product_id,
+                'quantity': 1,
+                'price_unit': 10,
+                'discount': 0,
+                #'ref': json.dumps({"barq_invoiceable": invoice_data['invoiceable']})
+            })]
+        })
+        move.with_user(uid).write({'state': 'posted', 'payment_state': 'paid'})
+        http.Response.status = '200'
+        return {
+                "state": "success",
+                "invoice": model_data(move)
+            }
