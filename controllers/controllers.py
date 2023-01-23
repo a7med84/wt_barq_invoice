@@ -175,6 +175,14 @@ class createinvoice(http.Controller):
         product_id = kw.get('product_id')
         ref = kw.get('ref')
         update = kw.get('update')
+        move_line = http.request.env['	account.move.line'].with_user(uid).create({
+                'product_id': product_id,
+                'quantity': 1,
+                'price_unit': 10,
+                'discount': 0,
+                #'ref': json.dumps({"barq_invoiceable": invoice_data['invoiceable']})
+            })
+
         move = http.request.env['account.move'].with_user(uid).create({
         'partner_id': client_id,
         'company_id': 1,
@@ -184,13 +192,7 @@ class createinvoice(http.Controller):
         'ref': ref,
         #'invoice_origin': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client', 'invoiceable')}),
         'invoice_line_ids':
-            [http.request.env['	account.move.line'].with_user(uid).create({
-                'product_id': product_id,
-                'quantity': 1,
-                'price_unit': 10,
-                'discount': 0,
-                #'ref': json.dumps({"barq_invoiceable": invoice_data['invoiceable']})
-            })]
+            [move_line.id]
         })
         if update:
             move.with_user(uid).write({'state': 'posted', 'payment_state': 'paid'})
