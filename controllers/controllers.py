@@ -69,7 +69,7 @@ class BarqInvoiceController(http.Controller):
                 "invoice_date": _date,
                 "invoice_id": move.id
             }) 
-             
+
             result[invoice['id']] = "Success"
         http.Response.status = '200'
         return {'message': "done", 'result': result}
@@ -103,7 +103,7 @@ def get_or_create_client(uid, invoice_client):
         limit=1
         )
 
-    client['invoice_client'] = CLIENT_STATUS.get(str(invoice_client['status']), "Unknown")
+    invoice_client['status'] = CLIENT_STATUS.get(str(invoice_client['status']), "Unknown")
     if not client:
         client = client_model.with_user(uid).create({
                 'email': invoice_client['email'],
