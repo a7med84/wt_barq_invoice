@@ -9,21 +9,29 @@ class BarqInvoice(models.Model):
 
     barq_id = fields.Integer()
     client_id = fields.Integer()
-    partner_id = fields.Many2one(
-        'res.partner',
-        string='Partner',
-        )
     invoiceable_id = fields.Integer()
     invoiceable_type = fields.Char()
-    product_id = fields.Many2one(
-        'product.product',
-        string='Product',
-        )
     sub_total = fields.Float()
     discount = fields.Float()
     total = fields.Float()
     payment_method = fields.Char(size=20)
     invoice_date = fields.Date(string='Invoice Date')
+
+    partner_id = fields.Many2one(
+        'res.partner',
+        string='Partner',
+        )
+    
+    product_id = fields.Many2one(
+        'product.product',
+        string='Product',
+        )
+
+    invoice_id = fields.Many2one(
+        'account.move',
+        string='Invoice',
+        )
+    
 
     _sql_constraints = [
                      ('barq_id_unique', 

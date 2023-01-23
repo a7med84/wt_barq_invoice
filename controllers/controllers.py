@@ -66,27 +66,10 @@ class BarqInvoiceController(http.Controller):
                 "discount": invoice["discount"],
                 "total": invoice["total"],
                 "payment_method": PAYMENT_METHOD.get(str(invoice['payment_method']), "Unknown"),
-                "invoice_date": _date
-            })  
-            """
-            barq_id = fields.Integer()
-            client_id = fields.Integer()
-            partner_id = fields.Many2one(
-                'res.partner',
-                string='Partner',
-                )
-            invoiceable_id = fields.Integer()
-            invoiceable_type = fields.Integer()
-            product_id = fields.Many2one(
-                'product.product',
-                string='Product',
-                )
-            sub_total = fields.Float()
-            discount = fields.Float()
-            total = fields.Float()
-            payment_method = fields.Integer()
-            invoice_date = fields.Date(string='Invoice Date')
-            """
+                "invoice_date": _date,
+                "invoice_id": move.id
+            }) 
+             
             result[invoice['id']] = "Success"
         http.Response.status = '200'
         return {'message': "done", 'result': result}
@@ -120,8 +103,7 @@ def get_or_create_client(uid, invoice_client):
         limit=1
         )
 
-
-    client['status'] = CLIENT_STATUS.get(str(invoice_client['status']), "Unknown")
+    client['invoice_client'] = CLIENT_STATUS.get(str(invoice_client['status']), "Unknown")
     if not client:
         client = client_model.with_user(uid).create({
                 'email': invoice_client['email'],
