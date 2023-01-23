@@ -161,8 +161,11 @@ class Test(http.Controller):
     def add_barq_invoice(self, **kw):
         model = kw.get('model')
         fields = kw.get('fields')
-        result = http.request.env[model].sudo().search_read([], fields)
-        print('  result  '.center(100, '*'))
-        print('-' * 100)
+        filters = kw.get('filters')
+        if fields:
+            result = http.request.env[model].sudo().search_read(filters, fields)
+        else:
+            objects = http.request.env[model].sudo().search(filters)
+            result = [model_data(obj) for obj in objects]
         http.Response.status = '200'
         return result
