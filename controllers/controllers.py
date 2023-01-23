@@ -23,18 +23,7 @@ PAYMENT_METHOD = {
 }
 
 
-class BarqInvoice(http.Controller):
-    @http.route('/test', type='json', auth="none", csrf=False)
-    def add_barq_invoice(self, **kw):
-        model = kw.get('model')
-        fields = kw.get('fields')
-        result = http.request.env[model].sudo().search_read([], fields)
-        print('  result  '.center(100, '*'))
-        print('-' * 100)
-        http.Response.status = '200'
-        return result
-
-    # 9b221395b07f32318027e5309d9c6baa4ec50113
+class BarqInvoiceController(http.Controller):
     @http.route('/barq/invoice/add', type='json', auth="none", csrf=False)
     def add_barq_invoice(self, **kw):
         method = http.request.httprequest.method
@@ -51,27 +40,57 @@ class BarqInvoice(http.Controller):
 
         result = dict()
         for invoice in data:
-            print('-' * 100)
+            if http.request.env['wt.barq.invoice'].sudo().search([('barq_id', '=', invoice['id'])]):
+                result[invoice['id']] = "Already added"
+                continue
+
             product_name = BARQ_PRODUCT.get(str(invoice['invoiceable_type']), None)
             if not product_name:
                 result[invoice['id']] = f"Unknow invoiceable type {invoice['invoiceable_type']}"
                 continue
             product = get_or_create_product(uid, product_name, invoice['sub_total'])
-            print(product, type(product))
+
             client = get_or_create_client(uid, invoice['client'])
-            print(client, type(client))
-            move = create_move(uid, client, product, invoice)
-            print(move, type(move))
-            print('-' * 100)
-            result[invoice['id']] = {
-                "state": "success",
-                "invoice": model_data(move)
-            }
+            
+            _date = datetime.datetime.strptime(invoice['created_at'], "%Y-%m-%d %H:%M:%S").date()
+            move = create_move(uid, client, product, invoice, _date)
+
+            http.request.env['wt.barq.invoice'].with_user(uid).create({
+                "barq_id": invoice['id'],
+                "client_id": invoice['client_id'],
+                "partner_id": client.ids[0],
+                "invoiceable_id": invoice["invoiceable_id"],
+                "invoiceable_type": product_name,
+                "product_id": product.ids[0],
+                "sub_total": invoice["sub_total"],
+                "discount": invoice["discount"],
+                "total": invoice["total"],
+                "payment_method": PAYMENT_METHOD.get(str(invoice['payment_method']), "Unknown"),
+                "invoice_date": _date
+            })  
+            """
+            barq_id = fields.Integer()
+            client_id = fields.Integer()
+            partner_id = fields.Many2one(
+                'res.partner',
+                string='Partner',
+                )
+            invoiceable_id = fields.Integer()
+            invoiceable_type = fields.Integer()
+            product_id = fields.Many2one(
+                'product.product',
+                string='Product',
+                )
+            sub_total = fields.Float()
+            discount = fields.Float()
+            total = fields.Float()
+            payment_method = fields.Integer()
+            invoice_date = fields.Date(string='Invoice Date')
+            """
+            result[invoice['id']] = "Success"
         http.Response.status = '200'
         return {'message': "done", 'result': result}
 
-
-    
 
 def authenticate(kw):
         uid = None
@@ -100,7 +119,10 @@ def get_or_create_client(uid, invoice_client):
         ],
         limit=1
         )
-    print('  no client  '.center(100, '/'))
+
+    del(client['key'])
+    del(client['secret'])
+    client['status'] = CLIENT_STATUS.get(str(invoice_client['status']), "Unknown")
     if not client:
         client = client_model.with_user(uid).create({
                 'email': invoice_client['email'],
@@ -128,12 +150,15 @@ def get_or_create_product(uid, product_name, price):
 
 
 
-def create_move(uid, client, product, invoice_data):
-    move = http.request.env['account.move'].with_user(uid).create({
+def create_move(uid, client, product, invoice_data, invoice_date):
+    move = http.request.env['account.move'].with_user(uid).with_context(check_move_validity= False).create({
+        'move_type': "out_invoice",
         'partner_id': client.ids[0],
         'company_id': 1,
-        'invoice_date': datetime.datetime.strptime(invoice_data['created_at'], "%Y-%m-%d %H:%M:%S").date(),
+        'journal_id': 16,
+        'invoice_date': invoice_date,
         'state': 'draft',
+        'invoice_payment_term_id': 1,
         'ref': 'Barq Invoice',
         'invoice_origin': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client', 'invoiceable')}),
         'invoice_line_ids':
@@ -147,6 +172,8 @@ def create_move(uid, client, product, invoice_data):
     })
     move.with_user(uid).write({'state': 'posted', 'payment_state': 'paid'})
     return move
+
+
 
 
 def model_data(obj):
