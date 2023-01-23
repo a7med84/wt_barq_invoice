@@ -120,8 +120,7 @@ def get_or_create_client(uid, invoice_client):
         limit=1
         )
 
-    del(client['key'])
-    del(client['secret'])
+
     client['status'] = CLIENT_STATUS.get(str(invoice_client['status']), "Unknown")
     if not client:
         client = client_model.with_user(uid).create({
@@ -130,6 +129,7 @@ def get_or_create_client(uid, invoice_client):
                 'phone': invoice_client['phone'],
                 'ref': _("Barq Client"),
                 'comment': json.dumps({'barq_info': invoice_client}),
+                'comment': json.dumps({k: invoice_client.get(k, None) for k in invoice_client.keys() if k not in ('key', 'secret')}),
             })
     return client
 
