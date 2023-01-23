@@ -110,7 +110,7 @@ def get_or_create_client(uid, invoice_client):
                 'name': invoice_client['name'],
                 'phone': invoice_client['phone'],
                 'property_account_receivable_id': 373,
-                '	property_account_payable_id': 387,
+                'property_account_payable_id': 387,
                 'ref': _("Barq Client"),
                 'comment': json.dumps({k: invoice_client.get(k, None) for k in invoice_client.keys() if k not in ('key', 'secret')}),
             })
