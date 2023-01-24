@@ -1,2 +1,1 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-wt_barq_invoice_full_access,access.wt_barq.invoice.full_access,model_wt_barq_invoice,base.group_system,1,1,1,1

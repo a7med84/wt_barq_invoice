@@ -40,7 +40,7 @@ class BarqInvoiceController(http.Controller):
 
         result = dict()
         for invoice in data:
-            if http.request.env['wt.barq.invoice'].sudo().search([('barq_id', '=', invoice['id'])]):
+            if http.request.env['account.move'].sudo().search([('ref', '=', f'Barq Invoice {invoice["id"]}')]):
                 result[invoice['id']] = "Already added"
                 continue
 
@@ -54,23 +54,10 @@ class BarqInvoiceController(http.Controller):
             
             _date = datetime.datetime.strptime(invoice['created_at'], "%Y-%m-%d %H:%M:%S").date()
             move = create_move(uid, client, product, invoice, _date)
-
-            http.request.env['wt.barq.invoice'].with_user(uid).create({
-                "barq_id": invoice['id'],
-                "client_id": invoice['client_id'],
-                "partner_id": client.ids[0],
-                "invoiceable_id": invoice["invoiceable_id"],
-                "invoiceable_type": product_name,
-                "product_id": product.ids[0],
-                "sub_total": invoice["sub_total"],
-                "discount": invoice["discount"],
-                "total": invoice["total"],
-                "payment_method": PAYMENT_METHOD.get(str(invoice['payment_method']), "Unknown"),
-                "invoice_date": _date,
-                "invoice_id": move.id
-            }) 
-
-            result[invoice['id']] = "Success"
+            if move:
+                result[invoice['id']] = "Success"
+            else:
+                result[invoice['id']] = "Failed"
         http.Response.status = '200'
         return {'message': "done", 'result': result}
 
