@@ -55,10 +55,12 @@ class BarqInvoiceController(http.Controller):
             _date = datetime.datetime.strptime(invoice['created_at'], "%Y-%m-%d %H:%M:%S").date()
             move = create_move(uid, client, product, invoice, _date)
             if move:
+                payment_method_id = http.request.env['account.payment.method'].sudo().search([('name', '=', 'Manual'), ('payment_type', '=', 'inbound')]).ids[0]
+                journal_id = http.request.env['account.journal'].sudo().search([('name', '=', 'بنك الانماء - ريال')]).ids[0]
                 payment_register_model = http.request.env['account.payment.register']
                 payment_register_id = payment_register_model.with_user(uid).with_context(active_model='account.move', active_ids= move.ids).create({
-                                'journal_id': 18,  # 18 inma bank, 19 rajhi bank, 20 cach
-                                'payment_method_id': 1, #1 manuel inbound, 2 manuel outbound, 3 electronic inbound
+                                'journal_id': journal_id,  # 18 inma bank, 19 rajhi bank, 20 cach
+                                'payment_method_id': payment_method_id, #1 manuel inbound, 2 manuel outbound, 3 electronic inbound
                                 })
 
                 payment_register_id.action_create_payments()
@@ -99,12 +101,15 @@ def get_or_create_client(uid, invoice_client):
 
     invoice_client['status'] = CLIENT_STATUS.get(str(invoice_client['status']), "Unknown")
     if not client:
+        account_model = http.request.env['account.account']
+        receivable_id = account_model.with_user(uid).search([('name', '=', 'العملاء')], limit=1).ids[0]
+        payable_id = account_model.with_user(uid).search([('name', '=', 'متنوعون ')], limit=1).ids[0]
         client = client_model.with_user(uid).create({
                 'email': invoice_client['email'],
                 'name': invoice_client['name'],
                 'phone': invoice_client['phone'],
-                'property_account_receivable_id': 373,
-                'property_account_payable_id': 387,
+                'property_account_receivable_id': receivable_id,
+                'property_account_payable_id': payable_id,
                 'ref': _("Barq Client"),
                 'comment': json.dumps({k: invoice_client.get(k, None) for k in invoice_client.keys() if k not in ('key', 'secret')}),
             })
@@ -128,15 +133,18 @@ def get_or_create_product(uid, product_name, price):
 
 
 def create_move(uid, client, product, invoice_data, _date):
+    company_id = http.request.env['res.users'].browse([uid]).company_id
+    journal_id = http.request.env['account.journal'].with_user(uid).search([('name', '=', 'فواتير العملاء')], limit=1).ids[0]
+    payment_term_id = http.request.env['account.payment.term'].with_user(uid).search([('name', '=', 'Immediate Payment')], limit=1).ids[0]
     move = http.request.env['account.move'].with_user(uid).with_context(check_move_validity= False).create({
         'move_type': "out_invoice",
         'partner_id': client.ids[0],
-        'company_id': 1,
-        'journal_id': 16,
+        'company_id': company_id,
+        'journal_id': journal_id,
         'invoice_date': _date,
         'l10n_sa_delivery_date': _date,
         'state': 'draft',
-        'invoice_payment_term_id': 1,
+        'invoice_payment_term_id': payment_term_id,
         'ref': f'Barq Invoice {invoice_data["id"]}',
         'activity_summary': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client')}),
         'invoice_line_ids':
@@ -149,124 +157,3 @@ def create_move(uid, client, product, invoice_data, _date):
     })
     move.with_user(uid).write({'state': 'posted'})
     return move
-
-
-
-
-def model_data(obj):
-    fields_dict = {}
-    for key in obj.fields_get():
-        fields_dict[key] = obj[key]
-    return fields_dict
-
-
-class Test(http.Controller):
-    @http.route('/test', type='json', auth="none", csrf=False)
-    def add_barq_invoice(self, **kw):
-        model = kw.get('model')
-        fields = kw.get('fields')
-        filters = kw.get('filters')
-        result = http.request.env[model].sudo().search_read(filters, fields)
-        http.Response.status = '200'
-        return result
-
-
-class createinvoice(http.Controller):
-    @http.route('/invoice/create', type='json', auth="none", csrf=False)
-    def add_barq_invoice(self, **kw):
-        uid = kw.get('uid')
-        partner_id = kw.get('partner_id')
-        product_id = kw.get('product_id')
-        ref = kw.get('ref')
-        update = kw.get('update')
-
-        move = http.request.env['account.move'].with_user(uid).with_context(check_move_validity= False).create({
-        'partner_id': partner_id,
-        'company_id': 1,
-        'journal_id': 16,
-        #'invoice_date': datetime.datetime.strptime(invoice_data['created_at'], "%Y-%m-%d %H:%M:%S").date(),
-        'state': 'draft',
-        'ref': ref,
-        'invoice_payment_term_id': 1,
-        'move_type': "out_invoice",
-        #'invoice_origin': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client', 'invoiceable')}),
-        'invoice_line_ids':
-            [(0, 0, {
-                'product_id': product_id,
-                'quantity': 1,
-                'price_unit': 10,
-                'discount': 0,
-                #'ref': json.dumps({"barq_invoiceable": invoice_data['invoiceable']})
-            })]
-        })
-        if update:
-            move.with_user(uid).write({'state': 'posted', 'payment_state': 'paid'})
-        http.Response.status = '200'
-        return {
-                "state": "success",
-                "invoice": model_data(move)
-            }
-
-class RegisterPayment(http.Controller):
-    @http.route('/invoice/pay', type='json', auth="none", csrf=False)
-    def invoice2paid(self, **kw):
-        uid = kw.get('uid')
-        invoice_id = kw.get('invoice_id')
-
-        move = http.request.env['account.move'].with_user(uid).search([('id', '=', invoice_id)])
-
-        payment_register_model = http.request.env['account.payment.register']
-        payment_register_id = payment_register_model.with_user(uid).with_context(active_model='account.move', active_ids= move.ids).create({
-                        'journal_id': 18,  # 18 inma bank, 19 rajhi bank, 20 cach
-                        'payment_method_id': 1, #1 manuel inbound, 2 manuel outbound, 3 electronic inbound
-                        })
-
-        payment_register_id.action_create_payments()
-
-
-"""
-payment_vals = {
-    'date': datetime.date(2023, 1, 24), 
-    'amount': 10.0, 
-    'payment_type': 'inbound', 
-    'partner_type': 'customer', 
-    'ref': 'INV/2023/01/0008', # move ref
-    'journal_id': 20,  # 18 inma bank, 19 rajhi bank, 20 cach 
-    'currency_id': 153, 
-    'partner_id': 314, # move partner
-    'partner_bank_id': False, 
-    'payment_method_id': 1, '
-    destination_account_id': 373
-    }
-
-
-
-
-{'date': datetime.date(2023, 1, 24), 'amount': 2.0, 'payment_type': 'inbound', 
-'partner_type': 'customer', 'ref': '{"barq_invo:18:01"}}', 'journal_id': 18, 'currency_id': 153, 
-'partner_id': 317, 'partner_bank_id': False, 'payment_method_id': 1, 'destination_account_id': 373}
-
-
-{'date': datetime.date(2023, 1, 24), 'amount': 2.0, 'payment_type': 'inbound', 
-'partner_type': 'customer', 'ref': '{"barq_i2023-01-11 19:18:01"}}', 'journal_id': 18, 'currency_id': 153, 
-'partner_id': 317, 'partner_bank_id': False, 'payment_method_id': 1, 'destination_account_id': 373}
-
-
-
-journal inma bank
-{'date': datetime.date(2023, 1, 24), 'amount': 10.0, 'payment_type': 'inbound', 
-'partner_type': 'customer', 'ref': 'INV/2023/01/0008', 'journal_id': 18, 'currency_id': 153, 
-'partner_id': 314, 'partner_bank_id': False, 'payment_method_id': 1, 'destination_account_id': 373}
-
-journal rajhi ban;
-{'date': datetime.date(2023, 1, 24), 'amount': 10.0, 'payment_type': 'inbound', 
-'partner_type': 'customer', 'ref': 'INV/2023/01/0008', 'journal_id': 19, 'currency_id': 153, 
-'partner_id': 314, 'partner_bank_id': False, 'payment_method_id': 1, 'destination_account_id': 373}
-
-
-journal cash
-{'date': datetime.date(2023, 1, 24), 'amount': 10.0, 'payment_type': 'inbound', 
-'partner_type': 'customer', 'ref': 'INV/2023/01/0008', 'journal_id': 20, 'currency_id': 153, 
-'partner_id': 314, 'partner_bank_id': False, 'payment_method_id': 1, 'destination_account_id': 373}
-
-"""
