@@ -140,8 +140,16 @@ def create_move(uid, client, product, invoice_data, _date):
                 'discount': invoice_data['discount'],  
             })]
     })
-    move.with_user(uid).write({'payment_reference': move.name, 'payment_state': 'paid'})
     move.with_user(uid).write({'state': 'posted'})
+
+    payment_register_model = http.request.env['account.payment.register']
+    payment_register_id = payment_register_model.with_user(uid).create({
+                    'journal_id': 18,  # 18 inma bank, 19 rajhi bank, 20 cach
+                    'payment_method_id': 1, #1 manuel inbound, 2 manuel outbound, 3 electronic inbound
+                    'invoice_ids': [(4, move.ids[0])]
+                      })
+
+    payment_register_model.with_user(uid).create_payments([payment_register_id])
     return move
 
 
