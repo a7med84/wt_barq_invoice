@@ -143,7 +143,7 @@ def create_move(uid, client, product, invoice_data, _date):
     move.with_user(uid).write({'state': 'posted'})
 
     payment_register_model = http.request.env['account.payment.register']
-    payment_register_id = payment_register_model.with_user(uid).create({
+    payment_register_id = payment_register_model.with_user(uid).with_context(active_model='account.mov').create({
                     'journal_id': 18,  # 18 inma bank, 19 rajhi bank, 20 cach
                     'payment_method_id': 1, #1 manuel inbound, 2 manuel outbound, 3 electronic inbound
                     'invoice_ids': move.ids
