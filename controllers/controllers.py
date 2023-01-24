@@ -55,6 +55,13 @@ class BarqInvoiceController(http.Controller):
             _date = datetime.datetime.strptime(invoice['created_at'], "%Y-%m-%d %H:%M:%S").date()
             move = create_move(uid, client, product, invoice, _date)
             if move:
+                payment_register_model = http.request.env['account.payment.register']
+                payment_register_id = payment_register_model.with_user(uid).with_context(active_model='account.move', active_ids= move.ids).create({
+                                'journal_id': 18,  # 18 inma bank, 19 rajhi bank, 20 cach
+                                'payment_method_id': 1, #1 manuel inbound, 2 manuel outbound, 3 electronic inbound
+                                })
+
+                payment_register_id.action_create_payments()
                 result[invoice['id']] = "Success"
             else:
                 result[invoice['id']] = "Failed"
@@ -207,15 +214,15 @@ class RegisterPayment(http.Controller):
         invoice_id = kw.get('invoice_id')
 
         move = http.request.env['account.move'].with_user(uid).search([('id', '=', invoice_id)])
+
         payment_register_model = http.request.env['account.payment.register']
-        payment_register_id = payment_register_model.with_user(uid).with_context(active_model='account.mov').create({
+        payment_register_id = payment_register_model.with_user(uid).with_context(active_model='account.move', active_ids= move.ids).create({
                         'journal_id': 18,  # 18 inma bank, 19 rajhi bank, 20 cach
                         'payment_method_id': 1, #1 manuel inbound, 2 manuel outbound, 3 electronic inbound
-                        'invoice_ids': move.ids
                         })
 
-        payment_register_model.with_user(uid).create_payments([payment_register_id])
-        
+        payment_register_id.action_create_payments()
+
 
 """
 payment_vals = {
