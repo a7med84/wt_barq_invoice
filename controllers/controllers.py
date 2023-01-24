@@ -143,7 +143,7 @@ def create_move(uid, client, product, invoice_data, invoice_date):
         'invoice_date_due': invoice_date,
         'state': 'draft',
         'invoice_payment_term_id': 1,
-        'ref': 'Barq Invoice',
+        'ref': f'Barq Invoice {invoice_date["id"]}',
         'invoice_origin': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client', 'invoiceable')}),
         'invoice_line_ids':
             [(0, 0, {
