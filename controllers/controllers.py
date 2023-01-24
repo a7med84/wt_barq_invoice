@@ -133,17 +133,17 @@ def get_or_create_product(uid, product_name, price):
 
 
 
-def create_move(uid, client, product, invoice_data, invoice_date):
+def create_move(uid, client, product, invoice_data, _date):
     move = http.request.env['account.move'].with_user(uid).with_context(check_move_validity= False).create({
         'move_type': "out_invoice",
         'partner_id': client.ids[0],
         'company_id': 1,
         'journal_id': 16,
-        'invoice_date': invoice_date,
-        'invoice_date_due': invoice_date,
+        'invoice_date': _date,
+        'l10n_sa_delivery_date': _date,
         'state': 'draft',
         'invoice_payment_term_id': 1,
-        'ref': f'Barq Invoice {invoice_date["id"]}',
+        'ref': f'Barq Invoice {invoice_data["id"]}',
         'invoice_origin': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client', 'invoiceable')}),
         'invoice_line_ids':
             [(0, 0, {
