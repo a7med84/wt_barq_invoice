@@ -141,15 +141,6 @@ def create_move(uid, client, product, invoice_data, _date):
             })]
     })
     move.with_user(uid).write({'state': 'posted'})
-
-    payment_register_model = http.request.env['account.payment.register']
-    payment_register_id = payment_register_model.with_user(uid).with_context(active_model='account.mov').create({
-                    'journal_id': 18,  # 18 inma bank, 19 rajhi bank, 20 cach
-                    'payment_method_id': 1, #1 manuel inbound, 2 manuel outbound, 3 electronic inbound
-                    'invoice_ids': move.ids
-                      })
-
-    payment_register_model.with_user(uid).create_payments([payment_register_id])
     return move
 
 
@@ -208,3 +199,67 @@ class createinvoice(http.Controller):
                 "state": "success",
                 "invoice": model_data(move)
             }
+
+class RegisterPayment(http.Controller):
+    @http.route('/invoice/pay', type='json', auth="none", csrf=False)
+    def invoice2paid(self, **kw):
+        uid = kw.get('uid')
+        invoice_id = kw.get('invoice_id')
+
+        move = http.request.env['account.move'].with_user(uid).search([('id', '=', invoice_id)])
+        payment_register_model = http.request.env['account.payment.register']
+        payment_register_id = payment_register_model.with_user(uid).with_context(active_model='account.mov').create({
+                        'journal_id': 18,  # 18 inma bank, 19 rajhi bank, 20 cach
+                        'payment_method_id': 1, #1 manuel inbound, 2 manuel outbound, 3 electronic inbound
+                        'invoice_ids': move.ids
+                        })
+
+        payment_register_model.with_user(uid).create_payments([payment_register_id])
+        
+
+"""
+payment_vals = {
+    'date': datetime.date(2023, 1, 24), 
+    'amount': 10.0, 
+    'payment_type': 'inbound', 
+    'partner_type': 'customer', 
+    'ref': 'INV/2023/01/0008', # move ref
+    'journal_id': 20,  # 18 inma bank, 19 rajhi bank, 20 cach 
+    'currency_id': 153, 
+    'partner_id': 314, # move partner
+    'partner_bank_id': False, 
+    'payment_method_id': 1, '
+    destination_account_id': 373
+    }
+
+
+
+
+{'date': datetime.date(2023, 1, 24), 'amount': 2.0, 'payment_type': 'inbound', 
+'partner_type': 'customer', 'ref': '{"barq_invo:18:01"}}', 'journal_id': 18, 'currency_id': 153, 
+'partner_id': 317, 'partner_bank_id': False, 'payment_method_id': 1, 'destination_account_id': 373}
+
+
+{'date': datetime.date(2023, 1, 24), 'amount': 2.0, 'payment_type': 'inbound', 
+'partner_type': 'customer', 'ref': '{"barq_i2023-01-11 19:18:01"}}', 'journal_id': 18, 'currency_id': 153, 
+'partner_id': 317, 'partner_bank_id': False, 'payment_method_id': 1, 'destination_account_id': 373}
+
+
+
+journal inma bank
+{'date': datetime.date(2023, 1, 24), 'amount': 10.0, 'payment_type': 'inbound', 
+'partner_type': 'customer', 'ref': 'INV/2023/01/0008', 'journal_id': 18, 'currency_id': 153, 
+'partner_id': 314, 'partner_bank_id': False, 'payment_method_id': 1, 'destination_account_id': 373}
+
+journal rajhi ban;
+{'date': datetime.date(2023, 1, 24), 'amount': 10.0, 'payment_type': 'inbound', 
+'partner_type': 'customer', 'ref': 'INV/2023/01/0008', 'journal_id': 19, 'currency_id': 153, 
+'partner_id': 314, 'partner_bank_id': False, 'payment_method_id': 1, 'destination_account_id': 373}
+
+
+journal cash
+{'date': datetime.date(2023, 1, 24), 'amount': 10.0, 'payment_type': 'inbound', 
+'partner_type': 'customer', 'ref': 'INV/2023/01/0008', 'journal_id': 20, 'currency_id': 153, 
+'partner_id': 314, 'partner_bank_id': False, 'payment_method_id': 1, 'destination_account_id': 373}
+
+"""
