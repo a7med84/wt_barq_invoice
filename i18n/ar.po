@@ -1,0 +1,269 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* wt_barq_invoice
+# Translators:
+# Ahmed Addawody <a7med84@gmail.com>, 2023
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-28 16:28+0000\n"
+"PO-Revision-Date: 2023-02-28 16:28+0000\n"
+"Last-Translator: # Ahmed Addawody <a7med84@gmail.com>, 2023\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: wt_barq_invoice
+#: code:addons/wt_barq_invoice/wizard/check_barq_invoices.py:0
+#, python-format
+msgid " and today or leave blank to check all"
+msgstr "واليوم أو اترك الحقل فارغا للتحقق من الكل"
+
+#. module: wt_barq_invoice
+#: model:res.groups,name:wt_barq_invoice.group_barq_permission
+msgid "Access Barq History"
+msgstr "الاطلاع على سجل طلبات برق"
+
+#. module: wt_barq_invoice
+#: model:ir.ui.menu,name:wt_barq_invoice.wt_barq_call_menu_root
+msgid "Barq"
+msgstr "برق"
+
+#. module: wt_barq_invoice
+#: model_terms:ir.ui.view,arch_db:wt_barq_invoice.wt_barq_call_form
+msgid "Barq Call"
+msgstr "طلب برق"
+
+#. module: wt_barq_invoice
+#: model:ir.actions.act_window,name:wt_barq_invoice.wt_barq_client_action_window
+msgid "Barq Clients"
+msgstr "عميل برق"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_call__barq_data
+#: model_terms:ir.ui.view,arch_db:wt_barq_invoice.wt_barq_call_form
+msgid "Barq Data"
+msgstr "بيانات برق"
+
+#. module: wt_barq_invoice
+#: model:ir.actions.act_window,name:wt_barq_invoice.wt_barq_call_action_window
+msgid "Barq History"
+msgstr "سجل طلبات برق"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields.selection,name:wt_barq_invoice.selection__barq_call__call_type__new
+msgid "Barq Invoice Notification"
+msgstr "تنبيه بفاتورة من برق"
+
+#. module: wt_barq_invoice
+#: model:ir.module.category,name:wt_barq_invoice.wt_barq_main_category
+msgid "Barq Invoice Permission"
+msgstr "الاطلاع على فواتير برق"
+
+#. module: wt_barq_invoice
+#: model:ir.actions.act_window,name:wt_barq_invoice.wt_barq_invoice_action_window
+msgid "Barq Invoices"
+msgstr "فواتير برق"
+
+#. module: wt_barq_invoice
+#: model:ir.actions.act_window,name:wt_barq_invoice.wt_barq_product_action_window
+msgid "Barq Products"
+msgstr "منتجات برق"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields.selection,name:wt_barq_invoice.selection__barq_call__call_type__vat
+msgid "Barq vat Notification"
+msgstr "تنبيه بالرقم الضريبي لعميل من برق"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_call__call_type
+msgid "Call Type"
+msgstr "نوع الطلب"
+
+#. module: wt_barq_invoice
+#: model_terms:ir.ui.view,arch_db:wt_barq_invoice.barq_check_invoices_view
+#: model_terms:ir.ui.view,arch_db:wt_barq_invoice.barq_update_clients_view
+msgid "Cancel"
+msgstr "الغاء"
+
+#. module: wt_barq_invoice
+#: model_terms:ir.ui.view,arch_db:wt_barq_invoice.barq_check_invoices_view
+msgid "Check"
+msgstr "تحقق"
+
+#. module: wt_barq_invoice
+#: model:ir.model,name:wt_barq_invoice.model_barq_check_wizard
+msgid "Check Barq Invoices"
+msgstr "التحقق من فواتير برق"
+
+#. module: wt_barq_invoice
+#: model:ir.actions.act_window,name:wt_barq_invoice.wt_barq_check_action
+#: model:ir.ui.menu,name:wt_barq_invoice.wt_barq_check_menuitem
+msgid "Check Invoices"
+msgstr "التحقق من الفواتير"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_clients_wizard__client
+msgid "Client"
+msgstr "عميل"
+
+#. module: wt_barq_invoice
+#: model:ir.ui.menu,name:wt_barq_invoice.wt_barq_client_list
+msgid "Clients"
+msgstr "عملاء"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_call__create_uid
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_check_wizard__create_uid
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_clients_wizard__create_uid
+msgid "Created by"
+msgstr "أنشئ بواسطة"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_call__create_date
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_check_wizard__create_date
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_clients_wizard__create_date
+msgid "Created on"
+msgstr "أنشئ في"
+
+#. module: wt_barq_invoice
+#: model:ir.actions.server,name:wt_barq_invoice.barq_check_cron_ir_actions_server
+#: model:ir.cron,cron_name:wt_barq_invoice.barq_check_cron
+#: model:ir.cron,name:wt_barq_invoice.barq_check_cron
+msgid "Daily check barq invoices"
+msgstr "تحقق يومي من فواتير برق"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_check_wizard__date
+msgid "Date"
+msgstr "التاريخ"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_call__display_name
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_check_wizard__display_name
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_clients_wizard__display_name
+msgid "Display Name"
+msgstr "اسم العرض"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_check_wizard__help
+msgid "Help"
+msgstr "المساعدة"
+
+#. module: wt_barq_invoice
+#: model:ir.ui.menu,name:wt_barq_invoice.wt_barq_call_history_list
+msgid "History"
+msgstr "التاريخ"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_call__id
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_check_wizard__id
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_clients_wizard__id
+msgid "ID"
+msgstr "المعرف"
+
+#. module: wt_barq_invoice
+#: model:ir.ui.menu,name:wt_barq_invoice.wt_barq_information
+msgid "Information"
+msgstr "معلومات"
+
+#. module: wt_barq_invoice
+#: model:ir.ui.menu,name:wt_barq_invoice.wt_barq_invoice_list
+msgid "Invoices"
+msgstr "الفواتير"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields.selection,name:wt_barq_invoice.selection__barq_call__call_type__daily_check
+msgid "Invoices Daily Check"
+msgstr "تحقق يومي من الفواتير"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields.selection,name:wt_barq_invoice.selection__barq_call__call_type__manuel_check
+msgid "Invoices Manuel Check"
+msgstr "تحقق يدوي من الفواتير"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_call____last_update
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_check_wizard____last_update
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_clients_wizard____last_update
+msgid "Last Modified on"
+msgstr "تاريخ آخر تعديل"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_call__write_uid
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_check_wizard__write_uid
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_clients_wizard__write_uid
+msgid "Last Updated by"
+msgstr "عدل بواسطة"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_call__write_date
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_check_wizard__write_date
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_clients_wizard__write_date
+msgid "Last Updated on"
+msgstr "تاريخ آخر تحديث"
+
+#. module: wt_barq_invoice
+#: model_terms:ir.actions.act_window,help:wt_barq_invoice.wt_barq_call_action_window
+#: model_terms:ir.actions.act_window,help:wt_barq_invoice.wt_barq_client_action_window
+#: model_terms:ir.actions.act_window,help:wt_barq_invoice.wt_barq_invoice_action_window
+#: model_terms:ir.actions.act_window,help:wt_barq_invoice.wt_barq_product_action_window
+msgid "No Result"
+msgstr "ﻻ نتائج"
+
+#. module: wt_barq_invoice
+#: model:ir.ui.menu,name:wt_barq_invoice.wt_barq_product_list
+msgid "Products"
+msgstr "المنتجات"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields,field_description:wt_barq_invoice.field_barq_call__result
+#: model_terms:ir.ui.view,arch_db:wt_barq_invoice.wt_barq_call_form
+msgid "Result"
+msgstr "النتيجة"
+
+#. module: wt_barq_invoice
+#: model_terms:ir.ui.view,arch_db:wt_barq_invoice.barq_update_clients_view
+msgid "Select a client or leave blank to update all"
+msgstr "حدد عميل أو اترك الحقل فارغا لتحديث كل عملاء برق"
+
+#. module: wt_barq_invoice
+#: code:addons/wt_barq_invoice/wizard/check_barq_invoices.py:0
+#, python-format
+msgid "Select a date between "
+msgstr "حدد تاريخ بين"
+
+#. module: wt_barq_invoice
+#: model_terms:ir.ui.view,arch_db:wt_barq_invoice.barq_update_clients_view
+msgid "Update"
+msgstr "تحديث"
+
+#. module: wt_barq_invoice
+#: model:ir.model,name:wt_barq_invoice.model_barq_clients_wizard
+msgid "Update Barq Cliemts"
+msgstr ""
+
+#. module: wt_barq_invoice
+#: model:ir.actions.act_window,name:wt_barq_invoice.wt_barq_update_clients_action
+#: model:ir.ui.menu,name:wt_barq_invoice.wt_barq_update_clients_menuitem
+msgid "Update Clients"
+msgstr "تحديث عملاء برق"
+
+#. module: wt_barq_invoice
+#: model:ir.ui.menu,name:wt_barq_invoice.wt_barq_updates
+msgid "Updates"
+msgstr "التحديثات"
+
+#. module: wt_barq_invoice
+#: model:ir.model.fields.selection,name:wt_barq_invoice.selection__barq_call__call_type__vat_manuel
+msgid "Vat Manuel Check"
+msgstr "تحقق يدوي من الرقم الضريبي لعملاء برق"
+
+#. module: wt_barq_invoice
+#: model:ir.model,name:wt_barq_invoice.model_barq_call
+msgid "Wide Techno Barq Invoice External API Calls"
+msgstr ""

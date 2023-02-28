@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!--    form views -->
+    <record id="barq_check_invoices_view" model="ir.ui.view">
+        <field name="name">Chek Barq Invoices</field>
+        <field name="model">barq.check.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box">
+                        <BUTTONS/>
+                    </div>
+                    <div class="d-block">
+                        <field label="Date" name="date"/>
+                    </div>
+                    <div class="d-block">
+                        <field name="help" nolabel="1" style="font-size: 1.125em;"/>   
+                    </div>
+                    
+                </sheet>
+                <footer>
+                    <button name="action_check_invoices" string="Check" type="object" default_focus="1" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!--    actions -->
+    <record id="wt_barq_check_action" model="ir.actions.act_window">
+        <field name="name">Check Invoices</field>
+        <field name="res_model">barq.check.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+	<menuitem id="wt_barq_check_menuitem" action="wt_barq_check_action" 
+    parent="wt_barq_updates" groups="wt_barq_invoice.group_barq_permission" sequence="1"/>
+</odoo>

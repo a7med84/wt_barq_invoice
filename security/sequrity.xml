@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--    main category   -->
+        <record id="wt_barq_main_category" model="ir.module.category">
+            <field name="name">Barq Invoice Permission</field>
+            <field name="sequence" eval="2"/>
+        </record>
+
+
+        <record id="group_barq_permission" model="res.groups">
+            <field name="name">Access Barq History</field>
+            <field name="category_id" ref="wt_barq_invoice.wt_barq_main_category"/>
+        </record>
+
+    </data>
+</odoo> 

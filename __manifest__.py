@@ -19,13 +19,17 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base', 'account', 'product'],
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/sequrity.xml',
+        'security/ir.model.access.csv',
+        'data/cron_action.xml',
         'views/views.xml',
         'views/templates.xml',
+        'wizard/check_wizard_views.xml',
+        'wizard/update_client_wizard_views.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -1,41 +1,41 @@
 # -*- coding: utf-8 -*-
 
-# from odoo import models, fields, api, _
+from odoo import models, fields, api, _
+import requests
+from ..utils.barqutils import *
 
 
-# class BarqInvoice(models.Model):
-#     _name = 'wt.barq.invoice'
-#     _description = 'Wide Techno Barq Invoice External API'
+BARQ_BASE_URL = "https://api.barq.wide-techno.com/api/crm/invoices"
 
-#     barq_id = fields.Integer()
-#     client_id = fields.Integer()
-#     invoiceable_id = fields.Integer()
-#     invoiceable_type = fields.Char()
-#     sub_total = fields.Float()
-#     discount = fields.Float()
-#     total = fields.Float()
-#     payment_method = fields.Char(size=20)
-#     invoice_date = fields.Date(string='Invoice Date')
+class BarqCall(models.Model):
+    _name = 'barq.call'
+    _description = 'Wide Techno Barq Invoice External API Calls'
+    _order = 'create_date desc'
 
-#     partner_id = fields.Many2one(
-#         'res.partner',
-#         string='Partner',
-#         )
+    call_type = fields.Selection([
+        ('new', 'Barq Invoice Notification'), 
+        ('vat', 'Barq vat Notification'), 
+        ('daily_check', 'Invoices Daily Check'), 
+        ('manuel_check', 'Invoices Manuel Check'), 
+        ('vat_manuel', 'Vat Manuel Check')
+        ], required=True
+        )
+    barq_data = fields.Text(required=True)
+    result = fields.Text(required=True)
+
+    @api.model
+    def daily_check(self):
+        barq_call_type = 'daily_check'
+        invoices = check_invoices(fields.Date.today())
+        if invoices:
+            add_invoices(self, invoices, barq_call_type, None)
+        else:
+            self.env['barq.call'].sudo().create({
+                'call_type': barq_call_type,
+                'barq_data': 'None',
+                'result': '400 Error: No data Received!'
+            })
+        
     
-#     product_id = fields.Many2one(
-#         'product.product',
-#         string='Product',
-#         )
 
-#     invoice_id = fields.Many2one(
-#         'account.move',
-#         string='Invoice',
-#         )
-    
-
-#     _sql_constraints = [
-#                      ('barq_id_unique', 
-#                       'unique(barq_id)',
-#                       _("Duplicate values not allowed for this field!"))
-#                     ]
     

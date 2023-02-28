@@ -1,60 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
   <data>
     <!-- explicit list view definition -->
-<!--
-    <record model="ir.ui.view" id="wt.barq.invoice.list">
-      <field name="name">wt.barq.invoice list</field>
-      <field name="model">wt.barq.invoice.wt.barq.invoice</field>
+
+    <record model="ir.ui.view" id="wt_barq_call_list">
+      <field name="name">Barq Calls List</field>
+      <field name="model">barq.call</field>
       <field name="arch" type="xml">
         <tree>
-          <field name="name"/>
-          <field name="value"/>
-          <field name="value2"/>
+          <field name="create_date"/>
+          <field name="call_type" widget="badge" 
+            decoration-primary="call_type == 'new'"
+            decoration-success="call_type == 'vat'"
+            decoration-warning="call_type == 'daily_check'"
+            decoration-info="call_type == 'manuel_check'"
+            decoration-muted="call_type == 'vat_manuel'"/>
+          <field name="create_uid" widget="many2one_avatar_user"/>
         </tree>
       </field>
     </record>
--->
 
-    <!-- actions opening views on models -->
-<!--
-    <record model="ir.actions.act_window" id="wt.barq.invoice.action_window">
-      <field name="name">wt.barq.invoice window</field>
-      <field name="res_model">wt.barq.invoice.wt.barq.invoice</field>
-      <field name="view_mode">tree,form</field>
-    </record>
--->
+    <!-- explicit form view definition -->
 
-    <!-- server action to the one above -->
-<!--
-    <record model="ir.actions.server" id="wt.barq.invoice.action_server">
-      <field name="name">wt.barq.invoice server</field>
-      <field name="model_id" ref="model_wt.barq.invoice_wt.barq.invoice"/>
-      <field name="state">code</field>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "tree,form",
-          "res_model": model._name,
-        }
+    <record id="wt_barq_call_form" model="ir.ui.view">
+      <field name="name">Barq Call Form</field>
+      <field name="model">barq.call</field>
+      <field name="arch" type="xml">
+        <form string="Barq Call" edit="0">
+          <sheet>
+            <group>
+              <field name="call_type" widget="badge" 
+              decoration-primary="call_type == 'new'"
+              decoration-success="call_type == 'vat'"
+              decoration-warning="call_type == 'daily_check'"
+              decoration-info="call_type == 'manuel_check'"
+              decoration-muted="call_type == 'vat_manuel'"/>
+              <field name="create_date"/>
+              <field name="create_uid" widget="many2one_avatar_user"/>
+            </group>
+            <notebook>
+              <page string="Barq Data">
+                <field name="barq_data"/>
+              </page>
+              <page string="Result">
+                <field name="result"/>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
       </field>
     </record>
--->
+    <!-- actions opening views on models -->
+
+    <record model="ir.actions.act_window" id="wt_barq_call_action_window">
+      <field name="name">Barq History</field>
+      <field name="res_model">barq.call</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+              No Result
+        </p>
+      </field>
+    </record>
+
+    <record id="wt_barq_invoice_action_window" model="ir.actions.act_window">
+      <field name="name">Barq Invoices</field>
+      <field name="res_model">account.move</field>
+      <field name="domain">[('ref', 'ilike', 'Barq Invoice')]</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+              No Result
+        </p>
+      </field>
+    </record>
+
+    <record id="wt_barq_client_action_window" model="ir.actions.act_window">
+      <field name="name">Barq Clients</field>
+      <field name="res_model">res.partner</field>
+      <field name="domain">[('ref', 'ilike', 'Barq Client')]</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+              No Result
+        </p>
+      </field>
+    </record>
+
+    <record id="wt_barq_product_action_window" model="ir.actions.act_window">
+      <field name="name">Barq Products</field>
+      <field name="res_model">product.product</field>
+      <field name="domain">[('name', 'ilike', 'برق')]</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+              No Result
+        </p>
+      </field>
+    </record>
 
     <!-- Top menu item -->
-<!--
-    <menuitem name="wt.barq.invoice" id="wt.barq.invoice.menu_root"/>
--->
-    <!-- menu categories -->
-<!--
-    <menuitem name="Menu 1" id="wt.barq.invoice.menu_1" parent="wt.barq.invoice.menu_root"/>
-    <menuitem name="Menu 2" id="wt.barq.invoice.menu_2" parent="wt.barq.invoice.menu_root"/>
--->
+
+    <menuitem name="Barq" id="wt_barq_call_menu_root"/>
+
+
     <!-- actions -->
-<!--
-    <menuitem name="List" id="wt.barq.invoice.menu_1_list" parent="wt.barq.invoice.menu_1"
-              action="wt.barq.invoice.action_window"/>
-    <menuitem name="Server to list" id="wt.barq.invoice" parent="wt.barq.invoice.menu_2"
-              action="wt.barq.invoice.action_server"/>
--->
+
+    <menuitem name="Information" id="wt_barq_information" parent="wt_barq_call_menu_root" sequence="1"/>
+
+    <menuitem name="Updates" id="wt_barq_updates" parent="wt_barq_call_menu_root" sequence="2"/>
+
+    <menuitem name="Invoices" id="wt_barq_invoice_list" parent="wt_barq_information" action="wt_barq_invoice_action_window" sequence="1"/>
+
+    <menuitem name="Clients" id="wt_barq_client_list" parent="wt_barq_information" action="wt_barq_client_action_window" sequence="2"/>
+
+    <menuitem name="Products" id="wt_barq_product_list" parent="wt_barq_information" action="wt_barq_product_action_window" sequence="3"/>
+
+    <menuitem name="History" id="wt_barq_call_history_list" parent="wt_barq_call_menu_root" action="wt_barq_call_action_window" sequence="2"/>
+
   </data>
 </odoo>

@@ -1,1 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+wt_barq_history_read_only,access.wt_barq_invoice.history.read_only,model_barq_call,group_barq_permission,1,0,0,0
+wt_barq_check_wizard_full_access,access.barq.check.wizard.full_access,model_barq_check_wizard,group_barq_permission,1,1,1,1
+wt_barq_clients_wizard_full_access,access.barq.clients.wizard.full_access,model_barq_clients_wizard,group_barq_permission,1,1,1,1
