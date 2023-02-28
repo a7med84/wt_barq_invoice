@@ -46,6 +46,7 @@ class BarqCheckWizard(models.TransientModel):
                     }
                     continue
                 if data:
+                    # remove client senstive data so it wont be saved
                     data = {k: data.get(k, None) for k in data.keys() if k not in ('key', 'secret')}
                     client_params = {
                     'email': data['email'],

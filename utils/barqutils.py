@@ -78,6 +78,7 @@ def add_invoices(obj, data, barq_call_type, uid=None):
 
 
 def get_or_create_client(obj, invoice_client, uid=None):
+    print(CLIENT_STATUS.get(str(invoice_client['status']), "Unknown"))
     invoice_client['status'] = CLIENT_STATUS.get(str(invoice_client['status']), "Unknown")
     client_params = {
                     'email': invoice_client['email'],

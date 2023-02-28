@@ -38,6 +38,7 @@ class BarqInvoiceController(http.Controller):
         http.Response.status = '200'
         return {'message': "done", 'result': result}
 
+
 class BarqClientController(http.Controller):
     @http.route('/barq/client/vat', type='json', auth="none", csrf=False)
     def add_barq_invoice(self, **kw):
@@ -60,6 +61,8 @@ class BarqClientController(http.Controller):
             return invalid_response('APi Key Error', err_msg, 401 )
         
         data = kw.get('data', '')
+        # remove client senstive data so it wont be saved
+        data = {k: data.get(k, None) for k in data.keys() if k not in ('key', 'secret')}
         
         if not data:
             http.request.env['barq.call'].sudo().create({
@@ -69,9 +72,12 @@ class BarqClientController(http.Controller):
             })
             return invalid_response('Data Error', "No data Received!", 400 )
         result = dict()
-        for x in data:
-            client = get_or_create_client(http.request, x, uid)
-            result[x['id']] = "Updated"
+        try:
+            client = get_or_create_client(http.request, data, uid)
+            result[data['id']] = "Updated"
+        except Exception as e:
+            result[data['id']] = '400 Error: Data not valid!'
+            
         http.request.env['barq.call'].sudo().create({
                 'call_type': 'vat',
                 'barq_data': json.dumps(data, indent=4),
