@@ -98,7 +98,7 @@
 
     <!-- Top menu item -->
 
-    <menuitem name="Barq" id="wt_barq_call_menu_root"/>
+    <menuitem name="Barq" id="wt_barq_call_menu_root" web_icon="wt_barq_invoice,static/description/icon.png"/>
 
 
     <!-- actions -->
