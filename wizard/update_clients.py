@@ -37,7 +37,7 @@ class BarqCheckWizard(models.TransientModel):
                 try:
                     resp = requests.get(url, headers=get_headers())
                     data = resp.json().get('data', '')
-                    all_data[client_barq_id] = data
+                    
                 except Exception as e:
                     result[client.id ] = {
                     'name': client.name,
@@ -48,6 +48,7 @@ class BarqCheckWizard(models.TransientModel):
                 if data:
                     # remove client senstive data so it wont be saved
                     data = {k: data.get(k, None) for k in data.keys() if k not in ('key', 'secret')}
+                    all_data[client_barq_id] = data
                     client_params = {
                     'email': data['email'],
                     'name': data['name'],
