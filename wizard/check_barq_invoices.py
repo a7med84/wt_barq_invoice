@@ -25,6 +25,7 @@ class BarqCheckWizard(models.TransientModel):
             date = min(max([data['date'], MIN_DATE]), fields.Date.today())
         
         invoices = check_invoices(date)
+        
         if invoices:
             result, barq_call = add_invoices(self, invoices, 'manuel_check', None)
         elif isinstance(invoices, Exception):

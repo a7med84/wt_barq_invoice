@@ -47,7 +47,6 @@ def add_invoices(obj, data, barq_call_type, uid=None):
                 result[invoice['id']] = {"status": "Failed", "error": f"Unknown invoiceable type {invoice['invoiceable_type']}"}
                 continue
             product = get_or_create_product(obj, product_name, invoice['sub_total'], uid)
-
             move = create_move(obj, client, product, invoice, _date, uid)
             if move:
                 if move.amount_total_signed:
@@ -78,7 +77,6 @@ def add_invoices(obj, data, barq_call_type, uid=None):
 
 
 def get_or_create_client(obj, invoice_client, uid=None):
-    print(CLIENT_STATUS.get(str(invoice_client['status']), "Unknown"))
     invoice_client['status'] = CLIENT_STATUS.get(str(invoice_client['status']), "Unknown")
     client_params = {
                     'email': invoice_client['email'],
@@ -159,7 +157,7 @@ def create_move(obj, client, product, invoice_data, _date, uid=None):
         move = obj.env['account.move'].with_user(uid).with_context(check_move_validity= False).create(move_params)
         move.with_user(uid).write({'state': 'posted'})
     else:
-        move_params['company_id'] = obj.user.company_id
+        move_params['company_id'] = obj.env.user.company_id
         move = obj.env['account.move'].with_context(check_move_validity= False).create(move_params)
         move.write({'state': 'posted'})
     return move
