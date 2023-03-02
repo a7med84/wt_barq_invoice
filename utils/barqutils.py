@@ -50,17 +50,20 @@ def add_invoices(obj, data, barq_call_type, uid=None):
             move = create_move(obj, client, product, invoice, _date, uid)
             if move:
                 if move.amount_total_signed:
-                    payment_method_id = obj.env['account.payment.method'].sudo().search([('name', '=', 'Manual'), ('payment_type', '=', 'inbound')]).ids[0]
-                    journal_id = obj.env['account.journal'].sudo().search([('name', '=', 'بنك الانماء - ريال')]).ids[0]
                     payment_register_model = obj.env['account.payment.register']
                     params = {
-                        'journal_id': journal_id,  # 18 inma bank, 19 rajhi bank, 20 cach
-                        'payment_method_id': payment_method_id, #1 manuel inbound, 2 manuel outbound, 3 electronic inbound
+                        'journal_id': 18,  # 18 inma bank, 19 rajhi bank, 20 cach
                         }
                     if uid:
-                        payment_register_id = payment_register_model.with_user(uid).with_context(active_model='account.move', active_ids= move.ids).create(params)
+                        payment_register_id = payment_register_model.with_user(uid).with_context(
+                            active_model='account.move', 
+                            active_ids= move.ids,
+                            dont_redirect_to_payments=True).create(params)
                     else:
-                        payment_register_id = payment_register_model.with_user(uid).with_context(active_model='account.move', active_ids= move.ids).create(params)
+                        payment_register_id = payment_register_model.with_user(uid).with_context(
+                            active_model='account.move', 
+                            active_ids= move.ids,
+                            dont_redirect_to_payments=True).create(params)
                     payment_register_id.action_create_payments()
                 result[invoice['id']] = {"status": "Success"}
             else:
@@ -125,30 +128,29 @@ def get_or_create_product(obj, product_name, price, uid=None):
 
 
 def create_move(obj, client, product, invoice_data, _date, uid=None):
-    journal_id = obj.env['account.journal'].sudo().search([('name', '=', 'فواتير العملاء')], limit=1).ids[0]
-    payment_term_id = obj.env['account.payment.term'].sudo().search([('name', '=', 'Immediate Payment')], limit=1).ids[0]
     tax_ids = obj.env['account.tax'].sudo().search([
         ('name', '=', 'ضريبة القيمة المضافة VAT'), 
         ('type_tax_use', '=', 'sale'), 
         ('amount', '=', '15')
         ], limit=1).ids
     
+    discount = float(invoice_data['discount']) 
+    total = float(invoice_data['total'])  + discount
+
     move_params = {
         'move_type': "out_invoice",
         'partner_id': client.ids[0],
-        'journal_id': journal_id,
         'invoice_date': _date,
         'l10n_sa_delivery_date': _date,
         'state': 'draft',
-        'invoice_payment_term_id': payment_term_id,
         'ref': f'Barq Invoice {invoice_data["id"]}',
         'activity_summary': json.dumps({k: invoice_data.get(k, None) for k in invoice_data.keys() if k not in ('client')}, indent=4),
         'invoice_line_ids':
             [(0, 0, {
                 'product_id': product.ids[0],
                 'quantity': 1,
-                'price_unit': invoice_data['sub_total'],
-                'discount': (float(invoice_data['discount']) / float(invoice_data['sub_total'])) * 100,
+                'price_unit': total / 1.15,
+                'discount': (discount / total) * 100,
                 'tax_ids': tax_ids
             })]
     }

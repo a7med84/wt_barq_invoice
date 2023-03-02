@@ -26,7 +26,7 @@
       <field name="name">Barq Call Form</field>
       <field name="model">barq.call</field>
       <field name="arch" type="xml">
-        <form string="Barq Call" edit="0">
+        <form string="Barq Call" edit="0" create="false">
           <sheet>
             <group>
               <field name="call_type" widget="badge" 
@@ -66,7 +66,8 @@
     <record id="wt_barq_invoice_action_window" model="ir.actions.act_window">
       <field name="name">Barq Invoices</field>
       <field name="res_model">account.move</field>
-      <field name="domain">[('ref', 'ilike', 'Barq Invoice')]</field>
+      <field name="domain">[('ref', 'ilike', 'Barq Invoice'), ('move_type', '=', 'out_invoice')]</field>
+      <field name="context">{'default_move_type': 'out_invoice'}</field>
       <field name="help" type="html">
         <p class="o_view_nocontent_smiling_face">
               No Result

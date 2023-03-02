@@ -37,8 +37,8 @@ class BarqCheckWizard(models.TransientModel):
         else:
             barq_call = self.env['barq.call'].sudo().create({
                 'call_type': 'manuel_check',
-                'barq_data': 'None',
-                'result': 'Error: No data Received!'
+                'barq_data': invoices,
+                'result': 'No invoices'
             })
 
         action = self.env.ref('wt_barq_invoice.wt_barq_call_action_window').read()[0]
