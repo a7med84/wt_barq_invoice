@@ -33,7 +33,7 @@ class BarqCall(models.Model):
             self.env['barq.call'].sudo().create({
                 'call_type': barq_call_type,
                 'barq_data': 'None',
-                'result': '400 Error: No data Received!'
+                'result': 'No invoices!'
             })
         
     
